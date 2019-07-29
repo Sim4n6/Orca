@@ -1,7 +1,7 @@
 # BashHistory2SQLITE
 Bash History 2 SQLITE : Process .bash_history file via sqlite3 database.
 
-# Usage :
+### Usage :
 
 ```
 usage: bh2db [-h] [-p bash_history | -i file.db] [-c] [-s term] [-v]
