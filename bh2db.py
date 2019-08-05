@@ -30,9 +30,9 @@ if args.process:
     # create a DB and insert all values in it
     conn = sqlite3.connect("bash_history.db")
     c = conn.cursor()
-    c.execute(""" CREATE TABLE IF NOT EXISTS bash_history (ids int, commands text)""")
+    c.execute(""" CREATE TABLE IF NOT EXISTS bash_history (ids int, commands text, UNIQUE(ids, commands))""")
     for tokens in tokens_lst:
-        c.execute(""" INSERT INTO bash_history VALUES (?,?)""",(tokens[0],tokens[1]))
+        c.execute(""" INSERT OR IGNORE INTO bash_history VALUES (?,?)""",(tokens[0],tokens[1]))
     conn.commit()
     conn.close()
 
