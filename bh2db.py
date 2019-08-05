@@ -93,6 +93,16 @@ if args.search:
         print("Command not found")
     conn.close()
 
+if args.export:
+    print(args.export)
+
+    if args.export == "csv":
+        pass
+    elif args.export == "json":
+        pass
+    elif args.export == "text":
+        pass
+
 
     # There is a little misunderstanding here, history does not show the content of ~/.bash_history. 
     # Instead, it shows the current content of Bash's history list in memory for this session.
