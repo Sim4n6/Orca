@@ -1,4 +1,5 @@
 import argparse
+import sqlite3
 
 VERSION = "0.1"
 
@@ -17,10 +18,23 @@ args = parser.parse_args()
 if args.process:
     print(args.process) # print a .bash_history
     
+    # read lines of bash_history file
     f_bh = open(args.process)
-    print(f_bh.readline().strip().split('  '))
+    tokens_lst = []
+    for line in f_bh :
+        tokens = line.strip().split('  ')
+        print(tokens[0], tokens[1])
+        tokens_lst.append(tokens)
     f_bh.close()
 
+    # create a DB and insert all values in it
+    conn = sqlite3.connect("bash_history.db")
+    c = conn.cursor()
+    c.execute(""" CREATE TABLE IF NOT EXISTS bash_history (ids int, commands text)""")
+    for tokens in tokens_lst:
+        c.execute(""" INSERT INTO bash_history VALUES (?,?)""",(tokens[0],tokens[1]))
+    conn.commit()
+    conn.close()
 
 
 if args.search:
@@ -29,6 +43,14 @@ if args.search:
 if args.count:
     print(args.count) # print -1 the value of const.
 
+    conn = sqlite3.connect("bash_history.db")
+    c = conn.cursor()
+    c.execute(""" SELECT COUNT(ids) FROM bash_history """)
+    count = c.fetchone()[0]
+    conn.commit()
+    conn.close()
+
+    print(f"Number of items in bash_history.db : {count}")
 
 
     # There is a little misunderstanding here, history does not show the content of ~/.bash_history. 
