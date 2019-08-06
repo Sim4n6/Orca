@@ -4,8 +4,7 @@
 ### Usage :
 
 ```
-usage: Orca [-h] [-p bash_history | -lo file.db] [-e format] [-lc] [-c] [-l]
-            [-s term] [-v]
+usage: Orca [-h] [-p .bash_history | -lo file.db] [-e format] [-lc] [-c] [-l] [-s term] [-v]
 
 Process .bash_history file via sqlite3 database.
 
