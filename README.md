@@ -1,5 +1,5 @@
-# BashHistory2SQLITE
-Bash History 2 SQLITE : Process .bash_history file via sqlite3 database.
+# Orca
+**Orca** a cmdline tool to process .bash_history file using SQLite db. 
 
 ### Usage :
 
