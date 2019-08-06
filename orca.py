@@ -4,7 +4,7 @@ import sqlite3
 VERSION = "0.1"
 
 # arguments parsing 
-parser = argparse.ArgumentParser(prog='bh2db', description="Process .bash_history file via sqlite3 database.")
+parser = argparse.ArgumentParser(prog='Orca', description="Process .bash_history file via sqlite3 database.", epilog=""" orca.py --process Samples\.bash_history """)
 group = parser.add_mutually_exclusive_group()
 group.add_argument('-p', "--process", help="process a .bash_history file into an sqlite db.", type=str, metavar='bash_history')
 group.add_argument('-lo', "--load", help="load a sqlite db file.", type=str, metavar='file.db')
@@ -102,6 +102,10 @@ if args.export:
         pass
     elif args.export == "text":
         pass
+
+
+if conn:
+    conn.close()
 
 
     # There is a little misunderstanding here, history does not show the content of ~/.bash_history. 
