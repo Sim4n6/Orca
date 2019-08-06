@@ -1,5 +1,7 @@
 import argparse
 import sqlite3
+from colorama import init, Fore
+init()
 
 #some constants
 VERSION = "0.1"
@@ -58,7 +60,7 @@ if args.count:
     count = c.fetchone()[0]
     conn.close()
 
-    print(f"Number of items in {DB_NAME} : {count}")
+    print(f"Number of items in {Fore.GREEN}{DB_NAME}{Fore.RESET} : {Fore.RED}{count}{Fore.RESET}")
 
 if args.list:
     #print(args.list)
@@ -68,7 +70,7 @@ if args.list:
     c.execute(""" SELECT * FROM bash_history """)
     rows = c.fetchall()
     for row in rows : 
-        print(f"At {row[0]} cmd --> {row[1]}")
+        print(f"At {Fore.RED}{row[0]}{Fore.RESET} cmd --> {Fore.GREEN}{row[1]}{Fore.RESET}")
     conn.close()
 
 if args.lastcmd:
@@ -79,7 +81,7 @@ if args.lastcmd:
     c.execute(""" SELECT * FROM bash_history """)
     rows = c.fetchall()
     lc = rows[len(rows)-1]
-    print(f"Last typed cmd --> {lc[1]}")
+    print(f"Last typed cmd --> {Fore.GREEN}{lc[1]}{Fore.RESET}")
     conn.close()
 
 
@@ -92,7 +94,7 @@ if args.search:
     rows = c.fetchall()
     if len(rows) != 0:
         for row in rows : 
-            print(f"At {row[0]} cmd --> {row[1]}")
+            print(f"Found {Fore.GREEN}{args.search}{Fore.RESET} at {Fore.RED}{row[0]}{Fore.RESET} cmd --> {Fore.GREEN}{row[1]}{Fore.RESET}")
     else:
         print("Command not found")
     conn.close()
