@@ -1,0 +1,7 @@
+uname -a
+clear
+ssh root@192.168.1.50
+exit
+ls
+clear
+echo "Hello"

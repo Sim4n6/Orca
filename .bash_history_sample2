@@ -1,0 +1,7 @@
+cd ..
+git status
+git add .
+git commit -m "added a new old article"
+git push origin master 
+curl cheat.sh/
+curl cheat.sh/tar
