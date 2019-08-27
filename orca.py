@@ -1,5 +1,7 @@
 import argparse
 import sqlite3
+import csv
+import json
 from colorama import init, Fore
 
 init()
@@ -25,8 +27,8 @@ parser.add_argument(
 parser.add_argument(
     "-e",
     "--export",
-    help="export .bash_history content into csv | json | text format.",
-    choices=["csv", "json", "text"],
+    help="export .bash_history content into csv or json.",
+    choices=["csv", "json"],
     metavar="format",
 )
 parser.add_argument(
@@ -138,11 +140,22 @@ if args.export:
     # print(args.export)
 
     if args.export == "csv":
-        pass
+        with open("exported.csv", 'w', newline='') as csvfile:
+            export_writer = csv.writer(csvfile, delimiter=',', quotechar='\\') # TO BE FIXED
+
+            # get content for DB in memory 
+            c = conn.cursor()
+            c.execute(""" SELECT * FROM bash_history """)  
+            rows = c.fetchall()
+            for row in rows: 
+                export_writer.writerow([row[0],row[1]])
+
     elif args.export == "json":
-        pass
-    elif args.export == "text":
-        pass
+        c = conn.cursor()
+        c.execute(""" SELECT * FROM bash_history """)  
+        rows = c.fetchall()
+        with open("exported.json", 'w') as f:
+            json.dump(rows, f)
 
 if conn:
     conn.close()
