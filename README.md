@@ -29,3 +29,9 @@ Examples :
    orca.py --load bash_history.db --lastcmd
   ```
 
+
+#### NOTE :
+
+There is a little misunderstanding. history cmd in Gnu/linux does not show the content file of ~/.bash_history.
+Instead, it shows the current content of Bash's history list in memory for the current session.
+
