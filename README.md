@@ -24,8 +24,7 @@ optional arguments:
 Examples: 
     orca.py --process .bash_history_sample1 --count
     orca.py --process .bash_history_sample1 -lc -s "curl" -c
-  ```
-
+```
 
 ### NOTE :
 
