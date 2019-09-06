@@ -6,10 +6,29 @@ from colorama import init, Fore
 
 init()
 
+from sqlalchemy import create_engine
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+#  connect ORM to sqlite using a memory engine
+DB_NAME = "sqlite:///:memory:"
+engine = create_engine(DB_NAME, echo=False)
+Base = declarative_base()
+
+
+class Bash_history(Base):
+    __tablename__ = "bash_histories"
+
+    id = Column(Integer, primary_key=True)
+    command = Column(String)
+
+    def __repr__(self):
+        return f"Bash_history({self.id} - {self.command})."
+
+
 # some constants
 VERSION = "0.1"
-DB_NAME = ":memory:"
-
 
 # arguments parsing
 parser = argparse.ArgumentParser(
@@ -76,60 +95,51 @@ if args.process:
     f_bh.close()
 
     # create a DB in MEMORY and insert all values in it
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute(
-        """ CREATE TABLE bash_history (id int, command text, UNIQUE(id,command) )"""
-    )
-    for i, line in enumerate(line_lst):
-        c.execute(""" INSERT INTO bash_history VALUES (?,?)""", (i, line.rstrip("\n")))
-    conn.commit()
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+    for line in line_lst:
+        bash_history = Bash_history(command=line.rstrip("\n"))
+        session.add(bash_history)
+    session.commit()
 
 
 if args.count:
     # print(args.count) # print -1 the value of const.
 
-    # count the number of ids in table bash_history
-
-    c = conn.cursor()
-    c.execute(""" SELECT COUNT(id) FROM bash_history """)
-    count = c.fetchone()[0]
-
+    # count the number of commands in table bash_histories table
+    count = session.query(Bash_history).count()
     print(
-        f"Number of items in {Fore.GREEN}{DB_NAME}{Fore.RESET} : {Fore.RED}{count}{Fore.RESET}"
+        f"Number of items in {Fore.GREEN}{DB_NAME}{Fore.RESET}: {Fore.RED}{count}{Fore.RESET}"
     )
 
 if args.list:
     # print(args.list)
 
-    c = conn.cursor()
-    c.execute(""" SELECT * FROM bash_history """)
-    rows = c.fetchall()
+    rows = session.query(Bash_history).all()
     for row in rows:
         print(
-            f"At {Fore.RED}{row[0]}{Fore.RESET} cmd --> {Fore.GREEN}{row[1]}{Fore.RESET}"
+            f"At {Fore.RED}{row.id}{Fore.RESET} cmd --> {Fore.GREEN}{row.command}{Fore.RESET}"
         )
 
 if args.lastcmd:
     # print(args.lastcmd)
 
-    c = conn.cursor()
-    c.execute(""" SELECT * FROM bash_history """)
-    rows = c.fetchall()
+    rows = session.query(Bash_history).all()
     lc = rows[len(rows) - 1]
-    print(f"Last typed cmd --> {Fore.GREEN}{lc[1]}{Fore.RESET}")
+    print(f"Last typed cmd --> {Fore.GREEN}{lc.command}{Fore.RESET}")
 
 if args.search:
     # print(args.search)
 
-    c = conn.cursor()
-    c.execute(""" SELECT * FROM bash_history """)  # , (args.search,))
-    rows = c.fetchall()
+    rows = session.query(Bash_history).all()
+
     isFound = False
     for row in rows:
-        if args.search in row[1]:
+        if args.search in row.command:
             print(
-                f"Found {Fore.GREEN}{args.search}{Fore.RESET} at {Fore.RED}{row[0]}{Fore.RESET} cmd --> {Fore.GREEN}{row[1]}{Fore.RESET}"
+                f"Found {Fore.GREEN}{args.search}{Fore.RESET} at {Fore.RED}{row.id}{Fore.RESET} cmd --> {Fore.GREEN}{row.command}{Fore.RESET}"
             )
             isFound = True
 
@@ -140,22 +150,23 @@ if args.export:
     # print(args.export)
 
     if args.export == "csv":
-        with open("exported.csv", 'w', newline='') as csvfile:
-            export_writer = csv.writer(csvfile, delimiter=',', quotechar='\\') # TO BE FIXED
+        with open("exported.csv", "w", newline="") as csvfile:
+            export_writer = csv.writer(
+                csvfile, delimiter=",", quotechar="\\"
+            )  #  TO BE FIXED
 
-            # get content for DB in memory 
-            c = conn.cursor()
-            c.execute(""" SELECT * FROM bash_history """)  
-            rows = c.fetchall()
-            for row in rows: 
-                export_writer.writerow([row[0],row[1]])
+            #  get content for DB in memory
+            rows = session.query(Bash_history).all()
+            for row in rows:
+                export_writer.writerow([row.id, row.command])
 
     elif args.export == "json":
-        c = conn.cursor()
-        c.execute(""" SELECT * FROM bash_history """)  
-        rows = c.fetchall()
-        with open("exported.json", 'w') as f:
-            json.dump(rows, f)
+        rows = session.query(Bash_history).all()
+        d_to_json = dict()
+        for row in rows:
+            d_to_json[row.id] = row.command
+        with open("exported.json", "w") as f:
+            json.dump(d_to_json, f)
 
 if conn:
     conn.close()
