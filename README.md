@@ -1,5 +1,5 @@
 # Orca
- <img src="orca.png" /> **Orca** a cmdline tool to process .bash_history file using SQLite db. 
+ <img src="orca.png" /> **Orca** a cmdline tool to process .bash_history file using SQLite dbms and SQLalchemy. 
 
 ### Usage :
 
