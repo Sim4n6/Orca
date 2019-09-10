@@ -83,7 +83,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-conn = ""
+conn = None
 if args.process:
     # print(args.process) # print a .bash_history
 
@@ -126,22 +126,18 @@ if args.list:
 if args.lastcmd:
     # print(args.lastcmd)
 
-    rows = session.query(Bash_history).all()
-    lc = rows[len(rows) - 1]
-    print(f"Last typed cmd --> {Fore.GREEN}{lc.command}{Fore.RESET}")
+    row = session.query(Bash_history).order_by(Bash_history.id.desc()).first()
+    print(f"Last typed cmd --> {Fore.GREEN}{row.command}{Fore.RESET}")
 
 if args.search:
     # print(args.search)
 
-    rows = session.query(Bash_history).all()
+    rows = session.query(Bash_history).filter(Bash_history.command.like(f"%{args.search}%"))
 
     isFound = False
     for row in rows:
-        if args.search in row.command:
-            print(
-                f"Found {Fore.GREEN}{args.search}{Fore.RESET} at {Fore.RED}{row.id}{Fore.RESET} cmd --> {Fore.GREEN}{row.command}{Fore.RESET}"
-            )
-            isFound = True
+        print(f"Found {Fore.GREEN}{args.search}{Fore.RESET} at {Fore.RED}{row.id}{Fore.RESET} cmd --> {Fore.GREEN}{row.command}{Fore.RESET}")
+        isFound = True
 
     if not isFound:
         print(f"Command {Fore.GREEN}{args.search}{Fore.RESET} not found.")

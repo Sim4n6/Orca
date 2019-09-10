@@ -103,12 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# no db 
-bash_history.db
-
-# no Pipfiles
-Pipfile
-Pipfile.lock
-
 #no vscode configs
 .vscode/
